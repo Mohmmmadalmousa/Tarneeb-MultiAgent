@@ -1,0 +1,83 @@
+# Phase 7 -- Stage 4 continuation (effective updates 289-576)
+#
+# MODE: weight + optimizer + LR-schedule continuation with a FRESH data/RNG stream.
+#       This is NOT a deterministic resume, and must never be described as one.
+#
+# Source: checkpoints/stage4_sampled_contract_update288.pt (effective update 288)
+#
+#   restored      : actor weights, critic weights, optimizer state (Adam moments)
+#   continued     : learning-rate schedule, as updates 289-576 of a 576-update anneal
+#   NOT restored  : environment states, action-sampling RNG, minibatch RNG,
+#                   opponent RNG, collector counters
+#
+# The streams were not restored because the original stage 4 checkpoints were
+# written before this trainer saved resume state; that state was never recorded
+# and cannot be reconstructed. New checkpoints written by this run DO carry it.
+#
+# Question under test: is stage 4 card play still improving, or has the
+# feedforward policy plateaued? The two largest confounds of a naive restart --
+# a cold optimizer and a learning-rate jump back to 3e-4 -- are removed here.
+#
+# The task is byte-for-byte the stage 4 task. Only the run name differs, so the
+# continuation's checkpoints do not collide with the original's.
+#
+# Fresh continuation seeds (all inside TRAINING_SEEDS, none from the held-out
+# evaluation range), recorded explicitly because the originals could not be
+# continued:
+#   environment_root_seed 713000   (original stage 4 used 703000)
+#   action_sampling_seed      12   (original 2)
+#   minibatch_shuffle_seed    13   (original 3)
+#   opponent_seed             14   (original 4)
+#
+# Budget: exactly 288 additional updates = 2,359,296 additional environment
+# steps. Pre-registered evaluations at effective updates 336, 384, 432, 480,
+# 528, 576 (= +48, +96, +144, +192, +240, +288).
+
+stage:
+  name: stage4_sampled_contract_continuation
+  curriculum_stage: 4
+  auction_mode: scripted
+  trump_mode: sampled
+  contract_mode: sampled
+  sampled_contracts: [7, 8, 9]
+  opponent: basic
+  trick_shaping_weight: 0.0
+  history_condition: full
+
+training:
+  run_name: stage4_continuation
+  environment_count: 32
+  rollout_length: 256
+  total_environment_steps: 2359296
+  training_opponent: basic
+  opponent_seed: 14
+  training_seed: 7
+  environment_root_seed: 713000
+  initialization_seed: 1
+  action_sampling_seed: 12
+  minibatch_shuffle_seed: 13
+  checkpoint_directory: checkpoints
+  checkpoint_every_updates: 1000000
+  ppo:
+    # Identical to the original stage 4. Nothing here is tuned for this run; the
+    # learning rate continues via the schedule offset, not via a changed value.
+    learning_rate: 0.0003
+    anneal_learning_rate: true
+    discount_factor: 1.0
+    gae_lambda: 0.95
+    clip_epsilon: 0.2
+    value_function_coefficient: 0.5
+    entropy_coefficient: 0.01
+    max_gradient_norm: 0.5
+    update_epochs: 4
+    minibatch_count: 4
+    target_kl_divergence: 0.02
+    adam_epsilon: 0.00001
+    normalize_advantages: true
+  evaluation:
+    every_updates: 48
+    paired_deal_count: 200
+    evaluation_seed: 70000007
+    bootstrap_resamples: 2000
+    opponent_names: [basic]
+    deterministic_actions: false

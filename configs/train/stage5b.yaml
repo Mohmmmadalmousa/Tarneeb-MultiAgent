@@ -1,0 +1,81 @@
+# Phase 7 curriculum -- stage 5B, auction warm-up
+#
+# A controlled experiment, not a redesign. It tests one hypothesis: that the
+# stage 6 bidding collapse was caused primarily by the curriculum transition
+# rather than by the card-play bottleneck.
+#
+# What the diagnosis measured, and why this stage exists:
+#   - after stages 2-5 the BID/PASS/TRUMP output-head rows were bit-identical to
+#     initialization (mean |dW| = 0.000000), because those actions were masked
+#     throughout the scripted-auction stages;
+#   - stage 6 therefore met a uniform auction policy (entropy 2.0793 = ln 8);
+#   - uniform bidding escalates the auction, so the first contracts averaged
+#     bid 12.07 with 0.8% contract success and reward -0.5618;
+#   - PPO removed bidding entirely within 8 updates (pass rate 0.374 -> 1.000).
+#
+# Exactly two things differ from stage 6, both ordinary configuration:
+#   1. opponent is `basic`, not `strong`, so early declarations are not punished
+#      by the strongest card player in the project;
+#   2. entropy_coefficient is 0.03 instead of 0.01, so the auction policy is not
+#      free to become deterministic before it has sampled a selective low bid.
+#      This is the frozen PPO entropy term with a different coefficient -- no
+#      auction-only entropy term is added to the objective.
+#
+# Everything else is unchanged: reward, masks, observations, actor, critic, PPO
+# equations, GAE, gamma, lambda, clip epsilon, learning rate.
+#
+# Budget: 96 updates = 786,432 environment steps. The original collapse became
+# permanent at update 8, so this is 12x that window, and the first scheduled
+# evaluation lands exactly on update 8 for a direct comparison.
+#
+# Seeds: environment_root_seed 707000 lies inside TRAINING_SEEDS (0 .. 10^8).
+# evaluation_seed 70000007 is the development seed used during training; the
+# final held-out seed set is not consumed by this experiment.
+
+stage:
+  name: stage5b_auction_warmup
+  curriculum_stage: 5
+  auction_mode: learned
+  trump_mode: sampled
+  contract_mode: sampled
+  opponent: basic
+  trick_shaping_weight: 0.0
+  history_condition: full
+
+training:
+  run_name: stage5b_auction_warmup
+  environment_count: 32
+  rollout_length: 256
+  total_environment_steps: 786432
+  training_opponent: basic
+  opponent_seed: 4
+  training_seed: 7
+  environment_root_seed: 707000
+  initialization_seed: 1
+  action_sampling_seed: 2
+  minibatch_shuffle_seed: 3
+  checkpoint_directory: checkpoints
+  checkpoint_every_updates: 1000000
+  ppo:
+    learning_rate: 0.0003
+    anneal_learning_rate: true
+    discount_factor: 1.0
+    gae_lambda: 0.95
+    clip_epsilon: 0.2
+    value_function_coefficient: 0.5
+    # 0.03 for THIS STAGE ONLY. The frozen whole-policy entropy term, configured
+    # higher so the auction policy cannot collapse before it explores.
+    entropy_coefficient: 0.03
+    max_gradient_norm: 0.5
+    update_epochs: 4
+    minibatch_count: 4
+    target_kl_divergence: 0.02
+    adam_epsilon: 0.00001
+    normalize_advantages: true
+  evaluation:
+    every_updates: 8
+    paired_deal_count: 150
+    evaluation_seed: 70000007
+    bootstrap_resamples: 2000
+    opponent_names: [basic]
+    deterministic_actions: false

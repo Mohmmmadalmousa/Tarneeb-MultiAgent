@@ -1,0 +1,26 @@
+# Ablation A1, Event-GRU condition.
+#
+# Identical to a1_ff.yaml in every field except `architecture` and the BC
+# checkpoint it starts from. That is the point of the ablation: one difference.
+
+condition: a1_gru
+architecture: gru
+bc_checkpoint: checkpoints/phase9_bc_gru.pt
+
+environment_count: 16
+rollout_length: 128
+total_updates: 250
+training_opponent: basic
+independent_seeds: [0, 1, 2]
+
+# History path capacity, for the report. The GRU path is SMALLER than the
+# feedforward one, so a GRU win cannot be explained by parameters.
+history_path_parameters: 255112
+actor_parameters: 956617
+critic_parameters: 940169
+
+evaluation:
+  final_held_out_seed: 20250910
+  paired_deals: 400
+  anchors: [random, basic, strong]
+  checkpoint_selection: pre-registered final update, by design, never by score

@@ -1,0 +1,38 @@
+# Ablation A2, treatment condition: centralized (MAPPO-style) recurrent critic.
+#
+# The ONLY difference from a2_decentralized.yaml is the critic input width.
+# The actor is byte-identical at initialization in both conditions.
+#
+# The privileged input is TRAINING-ONLY. Inference loads the actor alone
+# (`load_critic=False`), so execution is decentralized in both conditions.
+
+condition: a2_centralized
+critic_mode: centralized
+
+actor_observation_dim: 692     # unchanged - the actor never sees privileged data
+critic_observation_dim: 856    # + the three hidden hands and derived counts
+
+actor_parameters: 956617
+critic_parameters: 1024137     # 940169 + (856-692)*512 = 940169 + 83968
+
+# Inherited unchanged from Phase 9.
+architecture: gru
+environment_count: 16
+rollout_length: 128
+total_updates: 250
+chunk_length: 16
+training_opponent: basic
+bc_checkpoint: checkpoints/phase9_bc_gru.pt
+independent_seeds: [0, 1, 2]
+
+update_boundary: complete-deal G6 drain
+check_epoch_zero: true
+epoch_zero_tolerance: 0.0001
+
+evaluation:
+  every_updates: 50
+  paired_deals: 150
+  opponents: [random, basic, strong]
+  development_seed_range: [4000000, 4010000]
+  final_held_out_seed: 20250910
+  checkpoint_selection: pre-registered final update, by design, never by score

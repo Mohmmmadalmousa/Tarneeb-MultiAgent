@@ -1,0 +1,46 @@
+# Phase 6 smoke configuration: a few seconds of everything.
+#
+# Runs the same code path as the real experiment at a tiny size, so a broken
+# buffer, mask, reward sign or checkpoint shows up before a long run is started.
+# It is not expected to learn anything.
+
+run_name: ppo_ff_smoke
+
+environment_count: 4
+rollout_length: 32
+training_opponent: random
+opponent_seed: 4
+
+total_environment_steps: 384
+
+training_seed: 7
+environment_root_seed: 11
+initialization_seed: 1
+action_sampling_seed: 2
+minibatch_shuffle_seed: 3
+
+checkpoint_directory: checkpoints
+checkpoint_every_updates: 3
+
+ppo:
+  learning_rate: 0.0003
+  anneal_learning_rate: true
+  discount_factor: 1.0
+  gae_lambda: 0.95
+  clip_epsilon: 0.2
+  value_function_coefficient: 0.5
+  entropy_coefficient: 0.01
+  max_gradient_norm: 0.5
+  update_epochs: 2
+  minibatch_count: 2
+  target_kl_divergence: 0.02
+  adam_epsilon: 0.00001
+  normalize_advantages: true
+
+evaluation:
+  every_updates: 3
+  paired_deal_count: 10
+  evaluation_seed: 20250910
+  bootstrap_resamples: 200
+  opponent_names: [random]
+  deterministic_actions: false

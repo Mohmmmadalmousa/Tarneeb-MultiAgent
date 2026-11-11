@@ -1,0 +1,29 @@
+# Ablation A1, padded-feedforward-history condition.
+#
+# The matched control. Every field matches a1_gru.yaml except `architecture` and
+# the BC checkpoint, so any measured difference is attributable to the history
+# encoder rather than to budget, seeds, opponents or evaluation protocol.
+#
+# NOTE: this is NOT the frozen Phase 7 checkpoint. Phase 7 is not retrained or
+# re-selected. Its result (36.70% vs Strong) is reported separately as context,
+# with its very different budget stated.
+
+condition: a1_ff
+architecture: ff
+bc_checkpoint: checkpoints/phase9_bc_ff.pt
+
+environment_count: 16
+rollout_length: 128
+total_updates: 250
+training_opponent: basic
+independent_seeds: [0, 1, 2]
+
+history_path_parameters: 329536
+actor_parameters: 1031041
+critic_parameters: 1014593
+
+evaluation:
+  final_held_out_seed: 20250910
+  paired_deals: 400
+  anchors: [random, basic, strong]
+  checkpoint_selection: pre-registered final update, by design, never by score

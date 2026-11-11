@@ -1,0 +1,57 @@
+# Phase 9 principal recurrent PPO, as pre-registered in docs/PHASE9_DECISIONS.md.
+#
+# The compute contract below was fixed BEFORE any principal run, from the Part A
+# benchmark (1,566.8 decisions/s; 4.70 s per full update cycle at this size).
+# Changing any of it makes a run something other than the pre-registered one.
+
+run_family: phase9_gru_bc
+architecture: gru
+
+environment_count: 16
+rollout_length: 128        # 2,048 environment steps per update
+total_updates: 250         # 512,000 environment steps per run
+chunk_length: 16           # frozen chunk_v2
+
+# Fixed frozen baseline. Self-play is NOT used in Phase 9: Phase 7 measured
+# four-copy self-play collapsing to an all-pass equilibrium, and Phase 9's exit
+# gate does not require it. See docs/PHASE9_DECISIONS.md section 5.2.
+training_opponent: basic
+
+# Actor from behaviour cloning; critic fresh. The Strong heuristic has no value
+# function, so cloning one would be inventing a target.
+bc_checkpoint: checkpoints/phase9_bc_gru.pt
+critic_initialization: fresh
+critic_observation_dim: 692   # the 856 centralized critic is Phase 10
+
+independent_seeds: [0, 1, 2]
+initialization_seed: 1
+action_sampling_seed: 2
+minibatch_shuffle_seed: 3
+opponent_seed: 4
+
+# Five pre-registered evaluation checkpoints per run, development seeds only.
+evaluation_every_updates: 50
+evaluation_paired_deals: 150
+evaluation_opponents: [random, basic, strong]
+evaluation_bootstrap_resamples: 2000
+
+# A hard gate, not a diagnostic: it raises before any optimizer step.
+check_epoch_zero: true
+epoch_zero_tolerance: 0.0001
+
+# Unchanged from the frozen Phase 6 configuration. Phase 9 changes no PPO
+# mathematics, and both A1 conditions use exactly these values.
+ppo:
+  learning_rate: 0.0003
+  anneal_learning_rate: true
+  discount_factor: 1.0
+  gae_lambda: 0.95
+  clip_epsilon: 0.2
+  value_function_coefficient: 0.5
+  entropy_coefficient: 0.01
+  max_gradient_norm: 0.5
+  update_epochs: 4
+  minibatch_count: 4
+  target_kl_divergence: 0.02
+  adam_epsilon: 0.00001
+  normalize_advantages: true

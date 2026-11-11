@@ -1,0 +1,75 @@
+# Phase 6 -- feedforward masked PPO baseline.
+#
+# One episode is one deal. The learner holds one partnership with shared weights
+# and seat-relative observations; a frozen BasicHeuristicAgent holds the other,
+# which is the blueprint's curriculum for this stage. The learner's partnership
+# alternates by environment index, so the shared policy sees all four seats and
+# every role. Opponent decisions are stepped but never trained on.
+#
+# Four-copy self-play (training_opponent: self) is selectable but is NOT used
+# here: measured over 245k steps it converges to an all-pass equilibrium, the
+# failure signature the blueprint names for the bidding stage.
+#
+# Seeds are split by purpose so no two stochastic components share a stream, and
+# the environment root seed lies inside TRAINING_SEEDS, which Phase 5 proved
+# disjoint from the held-out evaluation range.
+
+run_name: ppo_ff_baseline
+
+# 32 x 256 = 8,192 decisions per rollout, roughly 130 complete deals.
+environment_count: 32
+rollout_length: 256
+training_opponent: basic
+opponent_seed: 4
+
+total_environment_steps: 2000000
+
+training_seed: 7
+environment_root_seed: 0
+initialization_seed: 1
+action_sampling_seed: 2
+minibatch_shuffle_seed: 3
+
+checkpoint_directory: checkpoints
+checkpoint_every_updates: 40
+
+ppo:
+  learning_rate: 0.0003
+  anneal_learning_rate: true
+  # gamma = 1.0: the reward arrives once, at the end of the deal. Discounting it
+  # would starve the auction -- the earliest and most consequential decisions --
+  # of signal.
+  discount_factor: 1.0
+  gae_lambda: 0.95
+  clip_epsilon: 0.2
+  value_function_coefficient: 0.5
+  entropy_coefficient: 0.01
+  max_gradient_norm: 0.5
+  update_epochs: 4
+  minibatch_count: 4
+  target_kl_divergence: 0.02
+  adam_epsilon: 0.00001
+  normalize_advantages: true
+
+architecture:
+  # Frozen obs_v2 / act_v1 / event_v1 shapes. The Phase 6 critic is
+  # decentralized, so it reads the same 692-dim actor-safe observation.
+  actor_observation_dim: 692
+  critic_observation_dim: 692
+  action_count: 65
+  history_length: 80
+  event_field_count: 7
+  event_onehot_dim: 99
+  event_projection_dim: 16
+  static_hidden_dim: 512
+  hidden_dim: 256
+  history_encoder: ff
+
+evaluation:
+  every_updates: 40
+  paired_deal_count: 300
+  # Held-out: evaluation_match_seed folds this into HELD_OUT_EVALUATION_SEEDS.
+  evaluation_seed: 20250910
+  bootstrap_resamples: 5000
+  opponent_names: [random]
+  deterministic_actions: false

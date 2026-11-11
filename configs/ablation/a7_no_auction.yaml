@@ -1,0 +1,59 @@
+# Phase 7 curriculum -- A7 condition, history = auction_removed
+#
+# One of three A7 conditions. Architecture, budget, hyper-parameters, seeds,
+# opponent, reward and masks are IDENTICAL across the three files; only
+# history_condition differs.
+#
+# The `stage` block is Phase 7's own. The `training` block is handed verbatim to
+# the frozen Phase 6 loader, so every PPO hyper-parameter keeps exactly the
+# meaning and validation it has there.
+#
+# Seeds: environment_root_seed lies inside TRAINING_SEEDS (0 .. 10^8).
+# evaluation_seed folds into HELD_OUT_EVALUATION_SEEDS and is the *development*
+# seed used during training; the final reported evaluation uses a separate seed.
+
+stage:
+  name: a7_no_auction
+  curriculum_stage: 6
+  auction_mode: learned
+  trump_mode: sampled
+  contract_mode: sampled
+  opponent: strong
+  trick_shaping_weight: 0.0
+  history_condition: auction_removed
+
+training:
+  run_name: a7_no_auction
+  environment_count: 32
+  rollout_length: 256
+  total_environment_steps: 1179648
+  training_opponent: strong
+  opponent_seed: 4
+  training_seed: 7
+  environment_root_seed: 706000
+  initialization_seed: 1
+  action_sampling_seed: 2
+  minibatch_shuffle_seed: 3
+  checkpoint_directory: checkpoints
+  checkpoint_every_updates: 1000000
+  ppo:
+    learning_rate: 0.0003
+    anneal_learning_rate: true
+    discount_factor: 1.0
+    gae_lambda: 0.95
+    clip_epsilon: 0.2
+    value_function_coefficient: 0.5
+    entropy_coefficient: 0.01
+    max_gradient_norm: 0.5
+    update_epochs: 4
+    minibatch_count: 4
+    target_kl_divergence: 0.02
+    adam_epsilon: 0.00001
+    normalize_advantages: true
+  evaluation:
+    every_updates: 24
+    paired_deal_count: 200
+    evaluation_seed: 70000007
+    bootstrap_resamples: 2000
+    opponent_names: [strong]
+    deterministic_actions: false

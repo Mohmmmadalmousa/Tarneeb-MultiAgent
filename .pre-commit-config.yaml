@@ -1,0 +1,21 @@
+# Lightweight hooks. Ruff replaces black / flake8 / isort for this project.
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: ["--maxkb=1024"]
+        # Only the checksum-verified local-play champion may exceed 1 MiB.
+        exclude: ^checkpoints/phase9_gru_bc_s0_update250\.pt$
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.16.6
+    hooks:
+      - id: ruff-check
+        args: ["--fix"]
+      - id: ruff-format

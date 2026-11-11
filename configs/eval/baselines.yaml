@@ -1,0 +1,59 @@
+# Phase 5 baseline evaluation.
+#
+# Every experiment plays duplicate pairs: the same dealt cards are played twice
+# with the partnerships swapped, and the paired statistic averages policy A's
+# margin over both orientations. A positive mean paired score difference means
+# policy A outscored policy B, in points per deal.
+#
+# Evaluation seeds are drawn from the held-out range reserved in
+# tarneeb/evaluation/arena.py (10**9 .. 10**9 + 100_000), which is disjoint from
+# the training seed range.
+
+evaluation:
+  paired_deal_count: 2000
+  evaluation_seed: 20250910
+  bootstrap_resamples: 10000
+  replay_verification_sample_rate: 0.05
+
+agents:
+  random:
+    class: RandomAgent
+    seed: 12345
+  # A second, differently seeded random policy. Random-vs-random must compare two
+  # BEHAVIOURALLY DIFFERENT policies: two identical policies make both orientations
+  # of a duplicate pair the same game, forcing the paired difference to exactly 0
+  # and making the sanity gate unable to detect seat, team or dealer bias.
+  random_alt:
+    class: RandomAgent
+    seed: 67890
+  basic:
+    class: BasicHeuristicAgent
+    bid_threshold: 13
+  strong:
+    class: StrongHeuristicAgent
+    bid_margin: 1.5
+
+# policy_a is listed first; the sign convention above is relative to it.
+experiments:
+  - name: random_vs_random
+    policy_a: random
+    policy_b: random_alt
+    purpose: sanity gate; detects seat, team or dealer bias in the arena
+  - name: basic_vs_random
+    policy_a: basic
+    policy_b: random
+    purpose: the basic heuristic must clearly beat the floor
+  - name: strong_vs_random
+    policy_a: strong
+    policy_b: random
+    purpose: upper anchor against the floor
+  - name: strong_vs_basic
+    policy_a: strong
+    policy_b: basic
+    purpose: the Phase 5 exit gate; 95% paired CI must lie above zero
+
+output:
+  directory: results/phase5_baselines
+  write_json: true
+  write_pairs_csv: true
+  write_summary_csv: true

@@ -1,0 +1,91 @@
+# Phase 7 -- Stage 5 MATCHED RE-TEST (curriculum transition experiment)
+#
+# Identical in every respect to the original Stage 5 run EXCEPT the starting
+# policy. The single experimental variable is the quality of the Stage 4 model
+# the transition begins from:
+#
+#   original Stage 5 : initialize_from stage4_sampled_contract_update288.pt
+#                      (that Stage 4 scored -0.6015 vs Basic, held out)
+#   this re-test     : initialize_from stage4_sampled_contract_continuation_update576.pt
+#                      (that Stage 4 scored +0.2600 vs Basic, held out)
+#
+# This is a WEIGHTS-ONLY initialization, exactly as the original Stage 5
+# transition was. Adam state, the learning-rate schedule, the environment stream
+# and every RNG stream all start fresh, because Stage 5 is a different task and
+# stale optimizer moments from Stage 4 would fight the new gradient. It is NOT a
+# continuation and must not be described as one.
+#
+# Every seed is deliberately identical to the original Stage 5 so the two runs
+# see the same deals, the same scripted auctions and the same opponent stream.
+# Only stage.name and run_name differ, so the new checkpoints do not overwrite
+# the preserved originals.
+#
+# Evaluations use the Phase 7 DEVELOPMENT seed (70000007). The final held-out
+# set (20250910) is deliberately NOT consulted during this experiment.
+#
+# CAVEAT CARRIED FORWARD about the improved Stage 4 model this starts from:
+# it was produced by a partial continuation whose learning-rate schedule was
+# reinterpreted as a 576-update plan. The 288->289 step was smooth under that new
+# schedule, but roughly 144x higher than the LR actually reached at the end of
+# the original 288-update run. That result therefore supports "the original
+# Stage 4 budget/schedule was too short" more strongly than "pure uninterrupted
+# extra training produced the gain".
+
+# Phase 7 curriculum -- stage 5, strong heuristic play
+#
+# The strongest frozen heuristic, still with the auction scripted so card play is isolated.
+#
+# The `stage` block is Phase 7's own. The `training` block is handed verbatim to
+# the frozen Phase 6 loader, so every PPO hyper-parameter keeps exactly the
+# meaning and validation it has there.
+#
+# Seeds: environment_root_seed lies inside TRAINING_SEEDS (0 .. 10^8).
+# evaluation_seed folds into HELD_OUT_EVALUATION_SEEDS and is the *development*
+# seed used during training; the final reported evaluation uses a separate seed.
+
+stage:
+  name: stage5_strong_play_retest
+  curriculum_stage: 5
+  auction_mode: scripted
+  trump_mode: sampled
+  contract_mode: sampled
+  sampled_contracts: [7, 8, 9]
+  opponent: strong
+  trick_shaping_weight: 0.0
+  history_condition: full
+
+training:
+  run_name: stage5_retest
+  environment_count: 32
+  rollout_length: 256
+  total_environment_steps: 1572864
+  training_opponent: strong
+  opponent_seed: 4
+  training_seed: 7
+  environment_root_seed: 704000
+  initialization_seed: 1
+  action_sampling_seed: 2
+  minibatch_shuffle_seed: 3
+  checkpoint_directory: checkpoints
+  checkpoint_every_updates: 1000000
+  ppo:
+    learning_rate: 0.0003
+    anneal_learning_rate: true
+    discount_factor: 1.0
+    gae_lambda: 0.95
+    clip_epsilon: 0.2
+    value_function_coefficient: 0.5
+    entropy_coefficient: 0.01
+    max_gradient_norm: 0.5
+    update_epochs: 4
+    minibatch_count: 4
+    target_kl_divergence: 0.02
+    adam_epsilon: 0.00001
+    normalize_advantages: true
+  evaluation:
+    every_updates: 48
+    paired_deal_count: 200
+    evaluation_seed: 70000007
+    bootstrap_resamples: 2000
+    opponent_names: [strong]
+    deterministic_actions: false

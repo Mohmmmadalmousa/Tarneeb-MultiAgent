@@ -1,0 +1,60 @@
+# Phase 7 curriculum -- stage 2, trick play only
+#
+# Fixed trump (spades) and a fixed contract of 8, no auction to learn, random opponents.
+# The reward is the frozen deal reward; trick shaping is available but OFF.
+#
+# The `stage` block is Phase 7's own. The `training` block is handed verbatim to
+# the frozen Phase 6 loader, so every PPO hyper-parameter keeps exactly the
+# meaning and validation it has there.
+#
+# Seeds: environment_root_seed lies inside TRAINING_SEEDS (0 .. 10^8).
+# evaluation_seed folds into HELD_OUT_EVALUATION_SEEDS and is the *development*
+# seed used during training; the final reported evaluation uses a separate seed.
+
+stage:
+  name: stage2_trick_play
+  curriculum_stage: 2
+  auction_mode: scripted
+  trump_mode: fixed
+  contract_mode: fixed
+  fixed_trump_suit: 3
+  fixed_contract: 8
+  opponent: random
+  trick_shaping_weight: 0.0
+  history_condition: full
+
+training:
+  run_name: stage2_trick_play
+  environment_count: 32
+  rollout_length: 256
+  total_environment_steps: 1179648
+  training_opponent: random
+  opponent_seed: 4
+  training_seed: 7
+  environment_root_seed: 700000
+  initialization_seed: 1
+  action_sampling_seed: 2
+  minibatch_shuffle_seed: 3
+  checkpoint_directory: checkpoints
+  checkpoint_every_updates: 1000000
+  ppo:
+    learning_rate: 0.0003
+    anneal_learning_rate: true
+    discount_factor: 1.0
+    gae_lambda: 0.95
+    clip_epsilon: 0.2
+    value_function_coefficient: 0.5
+    entropy_coefficient: 0.01
+    max_gradient_norm: 0.5
+    update_epochs: 4
+    minibatch_count: 4
+    target_kl_divergence: 0.02
+    adam_epsilon: 0.00001
+    normalize_advantages: true
+  evaluation:
+    every_updates: 36
+    paired_deal_count: 200
+    evaluation_seed: 70000007
+    bootstrap_resamples: 2000
+    opponent_names: [random]
+    deterministic_actions: false

@@ -1,0 +1,143 @@
+[build-system]
+requires = ["setuptools>=77", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tarneeb-rl"
+version = "0.1.0"
+description = "Deterministic four-player Tarneeb simulator and multi-agent reinforcement-learning research stack."
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+license = "MIT"
+authors = [{ name = "Mohammad Almousa" }]
+keywords = ["tarneeb", "card-game", "reinforcement-learning", "multi-agent", "ppo"]
+
+# Runtime dependencies for the simulator + training stack.
+# Blueprint rule: pin with `~=` except torch, which is pinned exactly.
+dependencies = [
+  "numpy~=2.5",
+  "torch==2.14.0",
+  "hydra-core~=1.3",
+  "tensorboard~=2.21",
+]
+
+[project.optional-dependencies]
+# Testing + code quality.
+dev = [
+  "pytest~=9.1",
+  "hypothesis~=6.167",
+  "pytest-benchmark~=5.3",
+  "ruff~=0.16.0",
+  "mypy~=2.3",
+  "pre-commit~=4.6",
+]
+
+# Optional standard RL interfaces; not used in the training hot path.
+#   gymnasium  -> `spaces` types only
+#   pettingzoo -> optional AEC conformance wrapper + api_test
+#   sb3-contrib -> early feedforward MaskablePPO baseline only
+rl = [
+  "gymnasium~=1.3",
+  "pettingzoo~=1.27",
+  "sb3-contrib~=2.9",
+]
+
+# Optional local human-play UI (localhost only).
+ui = [
+  "streamlit~=1.63",
+]
+
+[project.urls]
+Homepage = "https://github.com/"
+
+[tool.setuptools.packages.find]
+include = ["tarneeb*"]
+
+[tool.setuptools.package-data]
+tarneeb = ["py.typed"]
+
+# ----------------------------------------------------------------------------
+# pytest
+# ----------------------------------------------------------------------------
+[tool.pytest.ini_options]
+minversion = "9.0"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+  "-ra",
+  "--strict-markers",
+  "--strict-config",
+  "--import-mode=importlib",
+  # Long-running runs are opt-in: `pytest -m slow` (or `-m ""` for everything).
+  "-m", "not slow",
+]
+markers = [
+  "slow: long-running tests (exhaustive enumeration, stress runs)",
+  "benchmark: simulator throughput benchmarks",
+]
+filterwarnings = ["error::DeprecationWarning:tarneeb.*"]
+
+# ----------------------------------------------------------------------------
+# Ruff (lint + format; replaces black / flake8 / isort)
+# ----------------------------------------------------------------------------
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+src = ["tarneeb", "tests"]
+# Markdown is excluded on purpose: the project blueprint and research notes are
+# source-of-truth specification documents and must stay byte-for-byte verbatim.
+# Ruff >=0.14 formats Python code blocks inside Markdown, which would edit them.
+extend-exclude = [
+  ".venv",
+  "checkpoints",
+  "runs",
+  "results",
+  "data",
+  "notebooks",
+  "*.md",
+]
+
+[tool.ruff.lint]
+select = [
+  "E",    # pycodestyle errors
+  "W",    # pycodestyle warnings
+  "F",    # pyflakes
+  "I",    # isort
+  "UP",   # pyupgrade
+  "B",    # flake8-bugbear
+  "C4",   # comprehensions
+  "SIM",  # simplify
+  "RUF",  # ruff-specific
+]
+ignore = [
+  "E501",  # line length is handled by the formatter
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["B011"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["tarneeb"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
+
+# ----------------------------------------------------------------------------
+# mypy — lenient project-wide, strict on the pure engine (tarneeb/core)
+# ----------------------------------------------------------------------------
+[tool.mypy]
+python_version = "3.12"
+files = ["tarneeb"]
+ignore_missing_imports = true
+warn_unused_configs = true
+warn_redundant_casts = true
+warn_unused_ignores = false
+pretty = true
+
+[[tool.mypy.overrides]]
+module = "tarneeb.core.*"
+strict = true

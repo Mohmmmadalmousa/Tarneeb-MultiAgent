@@ -1,0 +1,62 @@
+# Phase 8 recurrent smoke configuration.
+#
+# This is a CORRECTNESS harness, not a training run. It exists to exercise the
+# whole recurrent path -- forward, rollout, chunk construction, loss, backward,
+# optimizer step, checkpoint, resume -- in a few seconds, so that the Phase 8
+# tests have something end-to-end to assert against.
+#
+# The sizes are deliberately tiny. No number produced by this configuration is a
+# performance result, and it must not be read as one. Real recurrent training is
+# Phase 9 and will have its own configuration.
+
+run_name: ppo_gru_smoke
+
+environment_count: 4
+rollout_length: 96
+total_updates: 2
+chunk_length: 16          # blueprint section 10.3
+
+training_opponent: basic  # a fixed frozen baseline holds the other partnership
+
+# Every stochastic stream is seeded explicitly and separately; no global RNG is
+# consulted for anything that matters.
+environment_root_seed: 0
+initialization_seed: 1
+action_sampling_seed: 2
+minibatch_shuffle_seed: 3
+opponent_seed: 4
+
+checkpoint_directory: checkpoints
+checkpoint_every_updates: 1
+
+# The epoch-zero replay identity is a hard correctness gate, not a diagnostic.
+# It must run before any optimizer step in every recurrent run.
+check_epoch_zero: true
+
+ppo:
+  # Carried unchanged from the frozen Phase 6 configuration. Phase 8 changes no
+  # PPO mathematics: same gamma, lambda, clip epsilon and learning rate.
+  learning_rate: 0.0003
+  anneal_learning_rate: true
+  discount_factor: 1.0
+  gae_lambda: 0.95
+  clip_epsilon: 0.2
+  value_function_coefficient: 0.5
+  entropy_coefficient: 0.01
+  max_gradient_norm: 0.5
+  update_epochs: 1
+  minibatch_count: 2
+  target_kl_divergence: 0.02
+  adam_epsilon: 0.00001
+  normalize_advantages: true
+
+architecture:
+  # event_gru_actor_critic_v1. Dimensions are the blueprint's, sections 5.4/6.2.
+  actor_observation_dim: 692
+  critic_observation_dim: 692   # the 856 centralized critic is Phase 10
+  hidden_size: 256
+  gru_layer_count: 1
+  event_projection_dim: 64
+  event_embedding_dims: [16, 8, 8, 8, 32, 8, 8]
+  static_hidden_dim: 512
+  gru_reset: deal

@@ -1,0 +1,32 @@
+# The frozen Phase 8 Event-GRU architecture, recorded for Phase 9 reference.
+# These values are contracts, not tunables: changing one invalidates every
+# existing recurrent checkpoint.
+
+model: event_gru_actor_critic_v1
+checkpoint_format: ppo_gru_v1
+buffer_contract: chunk_v2
+
+# Blueprint section 5.4 gives the per-field embedding widths exactly.
+event_embedding_dims: [16, 8, 8, 8, 32, 8, 8]   # event_type, actor_rel, bid, trump, card, trick, winner
+event_embedding_concat: 88
+event_projection_dim: 64
+
+gru_input: 64
+hidden_size: 256
+gru_layers: 1
+gru_reset: deal          # one dealt hand; all-pass redeals included
+
+static_hidden_dim: 512
+actor_observation_dim: 692
+critic_observation_dim: 692   # 856 centralized critic remains Phase 10
+
+chunk_length: 16
+k_max: 16
+
+parameters:
+  event_encoder: 7816
+  gru: 247296
+  history_path: 255112
+  actor_total: 956617
+  critic_total: 940169
+  combined: 1896786

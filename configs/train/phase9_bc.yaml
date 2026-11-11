@@ -1,0 +1,37 @@
+# Phase 9 behaviour cloning, as pre-registered in docs/PHASE9_DECISIONS.md.
+#
+# The teacher is the frozen StrongHeuristicAgent, which reads only a PublicView
+# and therefore cannot condition on information the student is forbidden.
+#
+# Consumed by scripts/train_bc.py. Recorded here so the run is reproducible from
+# the repository rather than from a shell history.
+
+teacher: StrongHeuristicAgent
+dataset_version: bc_v1
+
+# Demonstration volume. Chosen to fit CPU memory when materialized; see
+# docs/PHASE9_DECISIONS.md section 3.
+train_deals: 2500
+validation_deals: 500
+test_deals: 500
+
+# Seed splits (all inside the frozen TRAINING_SEEDS range).
+seeds:
+  bc_train: [1000000, 1040000]
+  bc_validation: [1040000, 1045000]
+  bc_test: [1045000, 1050000]
+
+epochs: 4
+batch_sequences: 64
+learning_rate: 0.001
+max_gradient_norm: 0.5
+initialization_seed: 1
+shuffle_seed: 11
+
+# Both A1 conditions are cloned from the identical demonstrations.
+architectures: [gru, ff]
+
+# Teacher-label accuracy is not the result: the cloned policy is also measured
+# in the frozen arena on development seeds.
+arena_paired_deals: 200
+arena_opponents: [random, basic, strong]

@@ -1,0 +1,106 @@
+# Local credentials and secrets (commit only sanitized example files).
+.env
+.env.*
+!.env.example
+!.env.sample
+!.env.template
+.aws/
+.ssh/
+.netrc
+_netrc
+.pypirc
+credentials.json
+service-account*.json
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Root virtual environments. Do not ignore the source package tarneeb/env/.
+/.venv/
+/venv/
+/env/
+/ENV/
+
+# Python bytecode, package builds, and test/tool caches.
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.pytest_cache/
+.hypothesis/
+.mypy_cache/
+.ruff_cache/
+.benchmarks/
+.tox/
+.nox/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+.ipynb_checkpoints/
+
+# Generated research artifacts. Preserve the empty directory placeholders.
+# Add explicit exceptions for any small datasets/results intended for publication.
+/checkpoints/*
+!/checkpoints/.gitkeep
+/runs/*
+!/runs/.gitkeep
+/results/*
+!/results/.gitkeep
+/data/*
+!/data/.gitkeep
+
+# Model weights are local unless a specific release artifact is allowed below.
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.safetensors
+
+# The one verified champion required by the local game (see README checksum).
+!/checkpoints/phase9_gru_bc_s0_update250.pt
+
+# Publish only the game rules and local-play guide; keep other docs local.
+/docs/*
+!/docs/RULES.md
+!/docs/PHASE13_LOCAL_UI.md
+
+# Frontend dependencies and generated output; keep manifests and lockfiles.
+node_modules/
+.pnpm-store/
+.npm/
+.next/
+.vite/
+.turbo/
+coverage/
+*.tsbuildinfo
+
+# Logs, temporary files, and local backups (including Git recovery bundles).
+*.log
+*.tmp
+*.bak
+/.tmp/
+/temp/
+/tmp/
+/.backups/
+/backups/
+
+# Personal editor state; retain the project's shared VS Code configuration.
+/.vscode/*
+!/.vscode/settings.json
+!/.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+*~
+
+# Operating-system metadata.
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Keep source, tests, configs, requirements.lock, package-lock.json,
+# pnpm-lock.yaml, .python-version, and .gitattributes versioned.

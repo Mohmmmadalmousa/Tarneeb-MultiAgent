@@ -1,0 +1,1410 @@
+# TARNEEB AI — COMPLETE JAWAKER-INSPIRED GAME APPLICATION
+
+## 1. Main objective
+
+Design and build a **fully interactive, visually polished, Arabic-first Tarneeb card game application**.
+
+The game's visual experience, table organization, card interactions, bidding controls, animations, and overall playing flow should be strongly inspired by the familiar experience of **Jawaker's Tarneeb game**.
+
+The most important requirement:
+
+**When someone opens this application, the experience should immediately feel familiar to a person who regularly plays Tarneeb on Jawaker.**
+
+This means:
+
+- A compact four-player card table.
+- A human player positioned at the bottom.
+- Their partner directly opposite at the top.
+- Two opponents on the left and right.
+- A clearly visible, horizontally overlapping 13-card hand.
+- Facedown cards behind the other players.
+- Player avatars and name labels around the table.
+- Quick bidding and pass interactions.
+- Direct card-playing interactions with minimal clicks.
+- Four cards appearing naturally in the middle of the table.
+- Quick, readable trick resolution.
+- Compact score and game-status indicators.
+- Fast, continuous gameplay with minimal interruptions.
+
+The game must not look like a dashboard, educational interface, chess application, casino website, or generic web app.
+
+**It must look and behave like a dedicated multiplayer-style Tarneeb game, even though the other three players are AI.**
+
+### Important design-reference rule
+
+Use Jawaker as the primary **interaction and layout inspiration**, not as a source of artwork to copy.
+
+Do not reproduce Jawaker's logo, original avatars, proprietary graphics, card-back artwork, branded icons, or identical visual assets.
+
+Create an original design that gives players the same familiar table-first experience.
+
+Reference sources:
+
+- Jawaker official app: https://play.google.com/store/apps/details?id=com.boundless.jawaker
+- Jawaker Tarneeb rules: https://blog.jawaker.com/en/tarneeb-rules-en/
+
+If screenshots are supplied, study their component positions, spacing, scale, interaction patterns, hand arrangement, player placement, and table proportions.
+
+Do not blindly copy colors or decorative details.
+
+---
+
+# 2. Product identity
+
+Application name:
+
+**TARNEEB AI — طرنيب AI**
+
+Subtitle:
+
+**العب طرنيب ضد الذكاء الاصطناعي**
+
+The project is based on an existing Python reinforcement-learning research system called Tarneeb-RL.
+
+It includes:
+
+- A real Tarneeb rules engine.
+- Trained AI models using recurrent PPO/GRU.
+- Heuristic agents.
+- A local human-versus-AI game session.
+- Frozen rules and trained model checkpoints.
+
+The app should eventually connect to these existing systems.
+
+For now, create a complete interactive frontend with an optional standalone playable demo mode.
+
+Do not claim that simulated demo agents are the real trained models.
+
+The interface will run locally; no cloud deployment is required.
+
+---
+
+# 3. Language and localization
+
+**Arabic is the default language.**
+
+The application opens in Arabic unless the user changes the setting.
+
+Use familiar Jordanian/Levantine Tarneeb terminology, without overly formal or unnatural translations.
+
+Examples:
+
+| UI element | Arabic default | English |
+|---|---|---|
+| Play | العب الآن | Play Now |
+| Start game | ابدأ اللعبة | Start Game |
+| Your turn | دورك | Your Turn |
+| Your partner | شريكك | Your Partner |
+| Opponents | الخصوم | Opponents |
+| Bid | اطلب | Bid |
+| Pass | باس | Pass |
+| Bidding | الطلب | Bidding |
+| Trump | الطرنيب | Trump |
+| Choose trump | اختار الطرنيب | Choose Trump |
+| Tricks won | الأكلات | Tricks Won |
+| Your team | فريقك | Your Team |
+| Game score | النتيجة | Score |
+| Next deal | الجولة الجاي | Next Deal |
+| Contract made | نجح الطلب | Contract Made |
+| Contract failed | سقط الطلب | Contract Failed |
+| You won | فزتوا! | You Won |
+| Opponents won | الخصوم فازوا | Opponents Won |
+| Settings | الإعدادات | Settings |
+
+Keep suit symbols visible alongside their Arabic names.
+
+Provide a visible العربية / EN toggle in settings and main menu.
+
+RTL must apply to text and navigation where appropriate, but **must never reverse the physical seating, card-play direction, suit symbols, or game rules**.
+
+Use an Arabic font designed for gaming interfaces, such as Tajawal or IBM Plex Sans Arabic.
+
+---
+
+# 4. UX priority: Make gameplay feel like Jawaker
+
+This is the highest-priority section.
+
+## 4.1 The game table is the entire experience
+
+Do not build a page with a navbar, sidebar, multiple rectangular dashboard panels, and a small embedded game.
+
+The gameplay screen should feel like a full-screen card table.
+
+Most of the available screen should be devoted to the four players, the table, and the human's cards.
+
+Secondary controls should be small, unobtrusive, and placed near screen edges.
+
+No scrolling during ordinary gameplay.
+
+## 4.2 Compact player positioning
+
+Show three AI players positioned:
+
+- Top center: Your AI partner.
+- Left center: AI opponent.
+- Right center: AI opponent.
+
+The human player occupies the bottom.
+
+Each AI player should have:
+
+- Circular avatar.
+- Name label.
+- Small team indicator.
+- Facedown card fan.
+- Active-turn indicator.
+- Bid/pass bubble when relevant.
+
+The avatars should remain at consistent locations throughout the game.
+
+Players should look like seated participants, not like cards in a dashboard.
+
+## 4.3 Human cards at the bottom
+
+The human hand should be displayed as a **single horizontally overlapping row of 13 cards**, similar to the familiar Jawaker hand.
+
+Do not display human cards in a large curved semicircle that wastes half the viewport.
+
+Do not place the cards in separate boxes or inventory slots.
+
+Arrange them tightly so the rank and suit of every card remain visible.
+
+The hand should span most of the width of the game area.
+
+When the human has fewer cards, redistribute the spacing naturally.
+
+## 4.4 Fast card interaction
+
+The player should be able to play a card in one simple action.
+
+Default behavior:
+
+- Hovering highlights or slightly raises a card.
+- Clicking or tapping a legal card plays it immediately.
+- The card animates to the middle.
+- The game proceeds automatically.
+
+Do not require a separate Play Card confirmation button for every card.
+
+Allow an optional two-step confirmation setting for players who prefer it.
+
+If a card is illegal, it must not be played. Explain the reason subtly when useful.
+
+Prevent double-clicking from sending duplicate actions.
+
+## 4.5 Fast bidding
+
+When the human needs to bid, show a compact, clearly readable bidding control near the lower-center of the game area.
+
+Use large, touch-friendly numeric choices and a distinct **باس** button.
+
+Bidding should feel quick and natural.
+
+The human must not navigate to a separate screen to bid.
+
+Do not display an enormous central modal that hides their entire hand.
+
+Show short, readable bid/pass announcements near each player's avatar.
+
+## 4.6 Automatic flow
+
+AI turns should proceed automatically.
+
+The user should not have to press:
+
+- Continue Turn.
+- Next Player.
+- Resolve Trick.
+- Confirm AI Move.
+
+AI actions, trick resolution, and transitions should happen naturally.
+
+Use short animations to maintain readability, not artificial delays to make the game look complex.
+
+---
+
+# 5. Visual references and design direction
+
+Create a modern, polished interpretation of a Jawaker-style Tarneeb table.
+
+### Background
+
+Use a dark neutral background surrounding the playing area.
+
+Suggested background:
+
+`#181B20`
+
+A subtle pattern or texture is acceptable, but must not distract.
+
+### Main card table
+
+Create a large rounded rectangular green felt table.
+
+Suggested felt:
+
+`#19764F`
+
+Alternative darker table:
+
+`#165A44`
+
+The table should have:
+
+- Rounded corners.
+- Subtle edge border.
+- Soft interior shading.
+- Slight depth.
+- Very restrained texture.
+- An uncluttered central playing zone.
+
+The table must have the familiar compact proportions of an online Tarneeb table rather than an enormous casino poker table.
+
+Use a custom original border style.
+
+### Interface accents
+
+Use:
+
+- White or ivory text.
+- Green action indicators.
+- Muted red for card backs or important highlights.
+- Small muted gold accents where useful.
+- Charcoal panels.
+- Red and black playing-card suits.
+
+Avoid excessive gradients, neon outlines, shiny gold objects, casino chips, and overdesigned glass panels.
+
+### Playing cards
+
+Use real-looking, high-quality playing cards.
+
+Cards must have:
+
+- Standard poker-style dimensions.
+- Clearly visible ranks.
+- Accurate suit symbols.
+- Red hearts and diamonds.
+- Black clubs and spades.
+- Professional face-card artwork.
+- Consistent corners and borders.
+- High contrast.
+
+The visual design should feel like ordinary playing cards familiar to Tarneeb players.
+
+Create an original repeating card-back pattern.
+
+---
+
+# 6. Main gameplay layout
+
+## Mobile portrait layout — primary visual reference
+
+Design around a 390 × 844 viewport.
+
+Suggested composition:
+
+```text
+┌──────────────────────────────┐
+│ ☰  طرنيب        النتيجة  ⚙  │
+│      فريقك 12 | الخصوم 8     │
+│                              │
+│          AI PARTNER          │
+│           (Avatar)           │
+│        ▰▰▰▰▰▰▰▰▰             │
+│                              │
+│  AI OPPONENT 1               │
+│     Avatar                   │
+│      ▰▰      ┌──────────┐   │
+│               │          │   │
+│               │  PLAYED  │   │
+│               │  CARDS   │   │
+│               │          │   │
+│               └──────────┘   │
+│                  ▰▰          │
+│                Avatar        │
+│            AI OPPONENT 2     │
+│                              │
+│      الطلب: 8 ♥              │
+│      الأكلات: 5 - 3          │
+│                              │
+│   HUMAN HAND — 13 CARDS      │
+│  ▯▯▯▯▯▯▯▯▯▯▯▯▯               │
+│                              │
+│        دورك                  │
+└──────────────────────────────┘
+```
+
+This is only a structural guide.
+
+Use the actual Jawaker-style seating: top, left, right, and bottom, with balanced positioning around a central table.
+
+Do not stack the side opponents below each other.
+
+The game area should be visually symmetrical where practical.
+
+## Desktop layout
+
+Use the same playing-table concept scaled intelligently for desktop.
+
+At approximately 1440 × 900:
+
+- Center the green game table.
+- Position the three AI players around it.
+- Display the human's cards along the bottom.
+- Place scores and controls unobtrusively at the top.
+- Use empty space carefully.
+- Keep the gameplay within the viewport.
+
+Do not stretch playing cards or avatars disproportionately.
+
+Desktop should resemble an expanded game application, not a website layout.
+
+## Tablet and mobile landscape
+
+Preserve the seating.
+
+Adjust card sizes and overlapping spacing.
+
+Avoid clipping cards, avatars, scores, or interaction controls.
+
+---
+
+# 7. Player avatars and seating
+
+Create four player identities.
+
+### Seat 0 — Human
+
+Position: bottom.
+
+Label: **أنت**
+
+The human's 13 actual cards are visible.
+
+Optional small avatar or name indicator.
+
+### Seat 2 — AI partner
+
+Position: top.
+
+Label: **شريكك AI**
+
+Facedown cards are visible behind or near the avatar.
+
+### Seat 3 — Opponent
+
+Position: left.
+
+Label: **خصم 1**
+
+### Seat 1 — Opponent
+
+Position: right.
+
+Label: **خصم 2**
+
+These labels are presentation labels; internal seat numbers must remain exact.
+
+The visual design should make partner/opponent relationships obvious without adding oversized team panels.
+
+### Active-turn indicator
+
+When a player is acting:
+
+- Highlight their avatar border.
+- Add a subtle glow, ring, or movement.
+- Optionally show a small indicator.
+
+Do not flash the entire screen.
+
+### Dealer indicator
+
+Use a small marker with the letter D or an original dealer icon.
+
+### Declarer indicator
+
+Show a small contract badge or suit symbol next to the declarer.
+
+### Remaining cards
+
+Show a visual fan of facedown cards.
+
+The fan should shrink as cards are played.
+
+It does not need to display 13 individually distinguishable backs if a compact representation with the correct remaining-card count is clearer.
+
+Never expose hidden hands.
+
+---
+
+# 8. Hand design and sorting
+
+The human's hand is one of the most important visual elements.
+
+Create a compact overlapping card row.
+
+At desktop size:
+
+- The cards should be large enough to identify easily.
+- Card faces should be visible.
+- Hovering raises a card approximately 8–16 pixels.
+- Selected cards have a subtle visual highlight.
+
+At mobile size:
+
+- Show each card's rank and suit in its exposed region.
+- Maintain sufficiently large touch targets.
+- Allow a small hand expansion or focused-card view when necessary.
+- Never require scrolling the entire page to see a card.
+
+### Card ordering
+
+Default hand ordering: grouped by suit, then rank.
+
+Allow a small sort control:
+
+**ترتيب الورق**
+
+Support sorting by suit and rank without changing game state.
+
+Do not automatically rearrange cards in the middle of a human decision if that risks accidental input.
+
+### Legal cards
+
+When following suit:
+
+- Legal cards remain normal.
+- Illegal cards are subdued or non-interactive.
+- A small hint can explain why a card is unavailable.
+
+Only the actual legal-action mask should determine what can be played in real-engine mode.
+
+---
+
+# 9. Bidding experience — Jawaker-style
+
+At the beginning of a deal, the player receives 13 cards.
+
+The bidding phase starts automatically.
+
+A compact numeric auction control appears when it is the human's turn.
+
+Example visual structure:
+
+```text
+         أعلى طلب: 8
+
+       9   10   11
+       12  13
+
+          [ باس ]
+```
+
+The actual visible numbers must depend on legal actions.
+
+When no bid exists, start at 7.
+
+### Bid interaction
+
+One tap on a legal number submits the bid.
+
+One tap on Pass submits Pass.
+
+Do not require a secondary confirmation step by default.
+
+### Bid announcements
+
+When an AI bids, show a brief speech bubble next to its avatar:
+
+**طلب 7**
+
+When it passes:
+
+**باس**
+
+When the human bids, show their bid near the bottom player area.
+
+### Auction status
+
+Always make the current highest bid discoverable.
+
+Use a small chip or badge instead of a large auction history table.
+
+A compact history panel may be opened through an icon.
+
+Do not obscure the hand or table.
+
+### All-pass condition
+
+If all four players pass:
+
+Show a short message:
+
+**الكل باس — توزيع جديد**
+
+Then redeal automatically using the same dealer and unchanged scores.
+
+---
+
+# 10. Trump selection
+
+After bidding finishes, the highest bidder chooses trump.
+
+If the human is the declarer, show four compact suit buttons:
+
+- ♣ Clubs
+- ♦ Diamonds
+- ♥ Hearts
+- ♠ Spades
+
+The buttons should use large, clear suit symbols.
+
+When a suit is selected, submit immediately or use a very short confirmation animation.
+
+Do not create a separate full-screen trump-selection page.
+
+If the AI selects trump, display a brief announcement:
+
+**الطرنيب ♥**
+
+Then move naturally into gameplay.
+
+The contract number and trump suit should remain visible in a compact HUD.
+
+No-trump is never an available choice.
+
+---
+
+# 11. Card-play experience
+
+During trick play, each player plays exactly one card into the center of the table.
+
+### Card placement
+
+The central trick should have four relative positions:
+
+- Top card: AI partner.
+- Right card: right opponent.
+- Bottom card: human.
+- Left card: left opponent.
+
+When each player acts:
+
+1. Animate the selected card from the hand or seat.
+2. Move it toward the player's central trick position.
+3. Display it face-up.
+4. Leave it visible until the trick is resolved.
+
+Do not arrange all four cards in a horizontal row.
+
+Use a compact four-direction arrangement like a real digital Tarneeb table.
+
+### Trick resolution
+
+After the fourth card:
+
+- Briefly highlight the winning card.
+- Identify the winning seat.
+- Animate the cards collecting toward the winner.
+- Increase the winning team's trick count.
+- Begin the next trick.
+
+Use subtle, fast motion.
+
+The next trick is led by the previous trick's winner.
+
+### Gameplay pacing
+
+The player should feel the same fast rhythm as a familiar online card game.
+
+Suggested durations:
+
+- AI action transition: 200–400 ms.
+- Card movement: 180–300 ms.
+- Trick-winner pause: 500–750 ms.
+- Trick cleanup: 180–300 ms.
+
+Use no artificial waiting after an action if the next state is ready.
+
+Respect reduced-motion settings.
+
+---
+
+# 12. Scoreboard and match indicators
+
+The top area should be compact.
+
+Show:
+
+- Team A score.
+- Team B score.
+- Current contract.
+- Trump suit.
+- Current trick.
+- Tricks taken by each partnership.
+- Dealer.
+
+Do not create six large dashboard tiles.
+
+Example compact display:
+
+**فريقك 12 | الخصوم 8**
+
+**الطلب 8 ♥ | الأكلات 5–3**
+
+A small scoreboard can be tapped to expand into a detailed score sheet.
+
+### Expandable score sheet
+
+Include:
+
+- Deal history.
+- Each deal's contract.
+- Winning partnership.
+- Tricks won.
+- Score changes.
+- Running match totals.
+
+Collapse the score sheet automatically when the user returns to gameplay.
+
+Never hide the full hand behind the expanded score sheet without an obvious close action.
+
+---
+
+# 13. End-of-deal experience
+
+When all 13 tricks finish, show a compact score summary resembling an in-game round result, not a giant report screen.
+
+Example:
+
+**انتهت الجولة**
+
+**الطلب:** 8 ♥
+
+**فريقك:** 9 أكلات
+
+**الخصوم:** 4 أكلات
+
+**نجح الطلب**
+
+**+9 لفريقك**
+
+**النتيجة: 21 – 14**
+
+Include an obvious button:
+
+**الجولة التالية**
+
+The result can be displayed in a centered overlay.
+
+Use clear score animations.
+
+Do not show excessive confetti after every deal.
+
+### Contract failure
+
+If the declarer fails to meet the bid, show the exact deductions and opponent score.
+
+### Kaboot and bid 13
+
+Use a more distinctive but still compact presentation for special scoring outcomes.
+
+The calculation must follow the project's frozen rules rather than alternative Jawaker configurations.
+
+---
+
+# 14. Match completion
+
+The target score is 31.
+
+When either team reaches or exceeds 31, show a polished match result.
+
+If the human's team wins:
+
+**مبروك! فزتوا 🎉**
+
+If the opposing team wins:
+
+**انتهت اللعبة — الخصوم فازوا**
+
+Display:
+
+- Final team scores.
+- Number of completed deals.
+- Contract success/failure counts when available.
+- Total tricks.
+- Replay or summary option if supported.
+- Play Again button.
+- Return to Menu button.
+
+Do not include fake rankings, online rewards, coins, or leaderboards.
+
+---
+
+# 15. Main menu — Jawaker-inspired simplicity
+
+The main menu should be extremely simple.
+
+Do not build a large multi-section website.
+
+Create a compact game home screen with:
+
+- Original Tarneeb AI logo.
+- High-quality cards illustration or subtle animation.
+- One strong primary action:
+
+**العب الآن**
+
+- Small secondary options:
+
+**كيف تلعب**
+
+**الإعدادات**
+
+**English / عربي**
+
+Optional game mode card:
+
+**طرنيب كلاسيك — ضد الذكاء الاصطناعي**
+
+Avoid unrelated content such as game stores, virtual currencies, tournaments, public rooms, accounts, profile levels, or paid features.
+
+Those belong to a social gaming platform, not this local research demonstration.
+
+---
+
+# 16. Game setup
+
+The user selects **العب الآن**.
+
+Display a compact setup overlay.
+
+Default configuration:
+
+- Human: seat 0.
+- AI teammate: seat 2.
+- AI opponents: seats 1 and 3.
+- Target score: 31.
+- Classic Tarneeb rules.
+
+Where supported, allow selecting available opponent types:
+
+- Basic heuristic.
+- Strong heuristic.
+- Trained AI.
+
+Only display choices that genuinely exist in the connected backend.
+
+Show the current mode:
+
+**وضع تجريبي** — Demo
+
+or:
+
+**متصل بمحرك الذكاء الاصطناعي** — Real engine connected
+
+The trained AI default is the existing saved champion:
+
+`checkpoints/phase9_gru_bc_s0_update250.pt`
+
+Do not invent alternative trained models or claim a superior model was promoted.
+
+Start the match with one clear action.
+
+No accounts or online lobby.
+
+---
+
+# 17. Real game rules — immutable
+
+The interface must follow the existing research version:
+
+**tarneeb-classic-v1**
+
+Jawaker is a UX inspiration. It is not allowed to override game mechanics.
+
+### Players
+
+Four players.
+
+Partners: seats 0 and 2; seats 1 and 3.
+
+Turn order: 0 → 1 → 2 → 3 → 0.
+
+### Dealing
+
+52 cards.
+
+13 cards per player.
+
+Ace high.
+
+The dealer rotates to the right between scored deals.
+
+First bidder:
+
+`(dealer + 1) % 4`
+
+### Auction
+
+Bids: 7–13.
+
+Bids must strictly increase.
+
+Pass is permanent for the auction.
+
+All-pass causes a redeal by the same dealer with no scoring.
+
+Highest bidder becomes declarer.
+
+### Trump
+
+The declarer chooses clubs, diamonds, hearts or spades.
+
+No-trump is disabled.
+
+The declarer leads the first trick.
+
+### Card play
+
+Players must follow suit when possible.
+
+The highest trump wins; otherwise the highest card of the led suit wins.
+
+The trick winner leads the next trick.
+
+Each deal contains 13 tricks.
+
+### Scoring
+
+Let:
+
+- `b` = winning bid.
+- `tB` = tricks won by the bidding team.
+- `tD = 13 − tB`.
+
+Apply these rules in exact precedence:
+
+1. Bid 13 made with 13 tricks: bidding team +26, defenders 0.
+2. Bid 13 failed: bidding team −16, defenders `2 × tD`.
+3. Bid below 13 with all 13 tricks taken by bidding team: +16, defenders 0.
+4. Bid below 13 made normally: bidding team `+tB`, defenders 0.
+5. Bid below 13 with defending-team kaboot: bidding team `−b`, defenders +16.
+6. Other failed bids: bidding team `−b`, defenders `+tD`.
+
+Negative scores are allowed.
+
+### Match end
+
+Target: 31 points.
+
+The match ends after scoring when a team reaches at least 31 points.
+
+Do not add any unsupported regional options.
+
+---
+
+# 18. Correct AI integration
+
+The original Tarneeb-RL project includes a Python engine and recurrent AI models.
+
+The generated application must support future connection to that existing code.
+
+Keep frontend gameplay presentation separate from authoritative game state.
+
+Create a clear `GameAdapter` abstraction for:
+
+- Starting matches.
+- Retrieving player-visible state.
+- Retrieving legal actions.
+- Submitting human actions.
+- Advancing AI turns.
+- Reading public events.
+- Reading current tricks.
+- Reading scoring outcomes.
+- Starting the next deal.
+- Ending the match.
+
+The adapter interface is a proposed integration boundary, not an existing API.
+
+Do not fabricate a production backend.
+
+### AI seat independence
+
+Every AI seat must maintain its own:
+
+- Observation.
+- Recurrent hidden state.
+- Public event cursor.
+- Game-state lifecycle.
+
+The model's recurrent state resets between deals and all-pass redeals as required by the Python implementation.
+
+Never feed hidden cards into actor observations.
+
+### Action space
+
+Existing action IDs:
+
+- 0–51: card actions.
+- 52–58: bids 7–13.
+- 59: Pass.
+- 60–63: trump suits.
+- 64: reserved no-trump action, always illegal.
+
+Use the actual Python implementation as authority for card indexing and suit mapping.
+
+Do not guess card IDs.
+
+---
+
+# 19. Demo mode requirements
+
+If the real Python engine is not yet connected, create a functional demo adapter.
+
+It must be clearly identified as a demo.
+
+The demo should support a complete game, not just animated examples.
+
+It should:
+
+- Deal 52 unique cards.
+- Maintain correct partnerships.
+- Run legal bidding.
+- Handle Pass.
+- Redeal after all-pass.
+- Select trump.
+- Enforce follow-suit.
+- Resolve tricks correctly.
+- Score each deal correctly.
+- Continue until 31 points.
+- Show proper victory and defeat screens.
+
+Demo AI agents may use basic deterministic heuristics.
+
+Do not pretend that they are the actual trained PPO/GRU model.
+
+If a reliable demo engine cannot be implemented on the chosen platform, create a complete interactive prototype and clearly state what remains nonfunctional.
+
+Do not falsely describe clickable mockups as a fully implemented game.
+
+---
+
+# 20. Settings
+
+The settings menu should be compact and accessible from the corner of the gameplay screen.
+
+Options:
+
+- Arabic / English.
+- Sound on/off.
+- Animation speed.
+- Reduced motion.
+- Card size.
+- Card ordering.
+- One-tap card play versus confirm-to-play.
+- Gameplay hints.
+- Restart match.
+- Return to main menu.
+
+Restarting or exiting an unfinished match should require confirmation.
+
+Do not show a countdown clock unless a real timed-turn mode is deliberately implemented.
+
+No online account settings are required.
+
+---
+
+# 21. Interaction details and usability
+
+### One-tap experience
+
+Normal card plays should require one tap.
+
+Legal bids and Pass should require one tap.
+
+Trump selection should be quick.
+
+AI turns should progress without manual continuation.
+
+### Human mistake prevention
+
+Prevent:
+
+- Selecting illegal cards.
+- Bidding out of turn.
+- Re-entering after Pass.
+- Selecting trump when not declarer.
+- Double-submitting an action.
+- Playing two cards in the same turn.
+- Skipping AI turns.
+- Showing the wrong trick winner.
+
+### In-game guidance
+
+Use discreet hints rather than lengthy tutorials.
+
+Examples:
+
+**دورك — اختار ورقة**
+
+**لازم تلعب من نفس النوع**
+
+**اختار الطرنيب**
+
+**شريكك طلب 8**
+
+The hint should appear only when useful.
+
+### Sound and animations
+
+Use original lightweight sounds:
+
+- Dealing.
+- Card placement.
+- Bid.
+- Trick completion.
+- Game victory.
+
+All sounds must be optional.
+
+Animation should never become slower than the actual game experience needs.
+
+### Pause and local session safety
+
+Allow exiting with confirmation.
+
+If session persistence is supported, restore only from genuinely saved compatible game state.
+
+Do not fabricate resume support.
+
+---
+
+# 22. Responsive UX
+
+This is a mobile-game-inspired interface, even when displayed on a computer.
+
+### Mobile
+
+- Primary design reference.
+- One compact game screen.
+- Bottom card hand.
+- Three AI avatars.
+- Central playing area.
+- Small controls and overlays.
+- No ordinary page scrolling.
+
+### Desktop
+
+- Centered, proportional table.
+- Cards large enough to read.
+- Consistent four-seat composition.
+- Minimal empty space.
+- No dashboard or web page layout.
+
+### Tablet
+
+- Adapt table dimensions.
+- Keep the hand and center trick visible.
+- Maintain comfortable interaction targets.
+
+Use responsive sizing rather than stretching mobile dimensions.
+
+---
+
+# 23. Accessibility
+
+Support:
+
+- Keyboard selection of playable cards.
+- Visible focus indicators.
+- Accurate card labels.
+- High contrast.
+- Screen reader announcements.
+- Reduced-motion mode.
+- Touch interactions.
+- RTL and LTR.
+- Accessible settings.
+
+Make the visually compact interface accessible without changing the game rules.
+
+Use clear alternatives to color-only indicators.
+
+---
+
+# 24. Mandatory screens and gameplay states
+
+Create designs and functional interactions for every state:
+
+1. Arabic main menu.
+2. English main menu.
+3. Game setup.
+4. Dealing animation.
+5. Human bidding.
+6. AI bidding.
+7. Player passing.
+8. All-pass redeal.
+9. Human trump selection.
+10. AI trump selection.
+11. Human's turn to play.
+12. AI's turn to play.
+13. Legal and illegal card presentation.
+14. One card played.
+15. Two cards played.
+16. Three cards played.
+17. Four-card completed trick.
+18. Trick-winner animation.
+19. Current score and contract.
+20. Expandable score sheet.
+21. Game history.
+22. Deal success.
+23. Deal failure.
+24. Kaboot result.
+25. Bid-13 success.
+26. Bid-13 failure.
+27. Next-deal transition.
+28. Team victory.
+29. Team defeat.
+30. Settings.
+31. Rules tutorial.
+32. Quit confirmation.
+33. Backend unavailable.
+34. Invalid action or failed update.
+35. Demo mode indicator.
+36. Connected-engine indicator.
+
+These states must be designed consistently.
+
+Do not provide just a beautiful default gameplay screen with missing interactions.
+
+---
+
+# 25. Screen-by-screen visual quality requirements
+
+### Gameplay screen
+
+This should be the most polished part of the entire product.
+
+Focus especially on:
+
+- Player spacing.
+- Avatar locations.
+- Hand readability.
+- Card overlap.
+- Table proportions.
+- Trick-card placement.
+- Bid control placement.
+- Score visibility.
+- Correct visual turn order.
+- Arabic typography.
+
+### Bidding screen state
+
+Show the human hand while bidding.
+
+Numeric controls should appear quickly.
+
+Keep the current bid visible.
+
+### Trump state
+
+Use four large readable suit icons.
+
+### Card-play state
+
+The human hand must remain the main interactive element.
+
+### Deal-summary state
+
+Use a compact score overlay.
+
+### Match-result state
+
+Use a more prominent victory or defeat design.
+
+---
+
+# 26. Technical organization
+
+Prefer:
+
+- React.
+- TypeScript.
+- Tailwind CSS.
+- Lightweight animation.
+- Reusable card and seat components.
+- Explicit game states.
+- An adapter-based backend boundary.
+
+Suggested component structure:
+
+```text
+src/
+  components/
+    GameTable/
+    PlayerAvatar/
+    PlayerSeat/
+    CardFan/
+    PlayingCard/
+    HumanHand/
+    PlayedTrick/
+    BiddingControls/
+    TrumpControls/
+    ScoreIndicator/
+    TurnIndicator/
+    DealerMarker/
+    TrickCounter/
+    ScoreSheet/
+    DealResult/
+    MatchResult/
+    Settings/
+    Rules/
+    Dialogs/
+  game/
+    types/
+    state/
+    adapters/
+      GameAdapter.ts
+      DemoGameAdapter.ts
+      PythonGameAdapter.ts
+    demo/
+  pages/
+    MainMenu/
+    GameSetup/
+    GameScreen/
+  localization/
+    ar/
+    en/
+  styles/
+  assets/
+```
+
+Create a responsive component system that can be adjusted without rewriting the logic.
+
+Keep game rules out of presentation components.
+
+The interface must be easy to connect to the original Python game later.
+
+---
+
+# 27. Testing requirements
+
+Verify at minimum:
+
+- Exactly 52 unique cards per deal.
+- Exactly 13 cards per player.
+- Correct partner assignments.
+- Correct dealer and first-bidder order.
+- Correct permanent Pass behavior.
+- Strictly increasing bids.
+- Same-dealer all-pass redeal.
+- Correct four-suit trump selection.
+- No-trump unavailable.
+- Follow-suit enforced.
+- Correct trump and trick-winner logic.
+- Correct 13-trick deal length.
+- Exact scoring for ordinary, failed, kaboot, and bid-13 contracts.
+- Negative scores.
+- Match ends at 31 or above.
+- No hidden-hand leakage.
+- No duplicate actions.
+- Correct AI turn handling.
+- Arabic works by default.
+- English switch works.
+- Cards remain readable on mobile.
+- No unnecessary confirmation after every card play.
+- No broken buttons.
+- No missing screens.
+
+Where possible, include automated tests for rule-sensitive demo functionality.
+
+---
+
+# 28. What NOT to build
+
+Do not add:
+
+- A social network.
+- Public multiplayer matchmaking.
+- In-app purchases.
+- Currency or coins.
+- Ads.
+- Tournaments.
+- Online leaderboards.
+- User registration.
+- Voice chat.
+- Random other card games.
+- Cryptocurrency or rewards.
+- An ML-training dashboard.
+- Charts showing loss, PPO updates, or research statistics during gameplay.
+- A cloud deployment system.
+- A new AI training pipeline.
+- A replacement for the existing Python game engine.
+
+This is a dedicated local Tarneeb game.
+
+The purpose is to let a human play with and against trained AI using a familiar, polished user experience.
+
+---
+
+# 29. Required deliverables
+
+Produce:
+
+1. Complete Arabic-first Tarneeb game interface.
+2. English localization.
+3. Jawaker-inspired four-player table layout.
+4. Polished player avatars and facedown card fans.
+5. Readable, overlapping 13-card human hand.
+6. One-tap legal card play.
+7. Compact bidding and Pass controls.
+8. Trump selector.
+9. Four-position central trick display.
+10. Smooth automatic AI turns and trick resolution.
+11. Compact scoreboard.
+12. Complete deal and match summaries.
+13. Game history and settings.
+14. Rules tutorial.
+15. Responsive mobile and desktop layouts.
+16. Functional game-state handling.
+17. Standalone demo mode where technically feasible.
+18. A clean adapter for integration with the real Python engine.
+19. Source code and editable components, if supported.
+20. Accurate report of what is truly functional versus simulated.
+
+---
+
+# 30. Final quality standard
+
+The final app should feel like opening a familiar Arabic Tarneeb application and immediately sitting at a card table.
+
+The main game screen must look like a real card game, not a web interface containing a card game.
+
+The user should be able to:
+
+1. Open the app.
+2. Press **العب الآن**.
+3. Receive 13 cards.
+4. Bid or pass using compact controls.
+5. Watch the other players bid.
+6. Select trump if they become declarer.
+7. Tap legal cards directly.
+8. Watch cards move to the center.
+9. See the trick winner and updated trick count.
+10. Continue naturally through all 13 tricks.
+11. See correct scoring.
+12. Start the next deal.
+13. Continue until a team reaches 31.
+14. See a proper victory or defeat screen.
+
+Every control must have a purpose.
+
+Every visual element must support gameplay.
+
+Every game rule must match `tarneeb-classic-v1`.
+
+**Prioritize the familiar Jawaker-style playing experience over decorative design, while using a completely original visual identity.**
+
+Build a functional application, not simply a beautiful mockup.
